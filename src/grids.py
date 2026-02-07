@@ -3,6 +3,7 @@ creates utility function to work with grids like converting a given image to gri
 """
 import torch
 from torchvision.io import decode_image
+from torchvision.transforms import Resize
 import matplotlib.pyplot as plt
 
 class Grid:
@@ -11,13 +12,16 @@ class Grid:
 		grid = (channel, rows, cols) where, channels = (r, g, b, alpha, ....) and alpha = [0, 1] where a cell is living if it's or it's neighbourhood's alpha > 0.1 else it's dead
 		"""
 		self.grid = torch.zeros((16, height, width))
+		# all the rgb cells to 1 to make white color
+		self.grid[:3, :, :] = 1
 
 	def copy_image(self, path, verbose=False):
 		image = decode_image(path, mode="RGB")
-		# resized_image = self.resize_image(image)
+		resized_image = self.resize_image(image)
+		breakpoint()
 
 		if verbose:
-			plt.imshow(torch.permute(image, (1, 2, 0)))
+			plt.imshow(torch.permute(resized_image, (1, 2, 0)))
 			plt.tight_layout()
 			plt.axis("off")
 			plt.savefig("./outputs/hello.png", bbox_inches="tight")
@@ -35,8 +39,12 @@ class Grid:
 		"""
 		pass
 
-	def resize_image(image, max_size=125):
+	def resize_image(self, image, max_size=64):
 		"""
 		returns the resized image for a given input image by shrinking the largest slide to max_size
 		"""
-		pass
+		_, h, w = image.shape
+		scale = max_size/max(h, w)
+		h, w = int(h*scale), int(w*scale)
+
+		return Resize((h, w))(image)
