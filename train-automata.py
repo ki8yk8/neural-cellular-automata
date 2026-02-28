@@ -25,5 +25,6 @@ grid.grid2img("./outputs/frame.png")
 
 perception_vector = grid.get_perception_vector()
 
-# model = CellularNeuralAutomata()
+model = CellularNeuralAutomata()
+updated_state = model(perception_vector)
 breakpoint()

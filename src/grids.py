@@ -98,10 +98,10 @@ class Grid:
 		"""
 		grid = self.grid.unsqueeze(dim=0)
 
-		print(grid.shape)
 		sovel_x = conv2d(grid, SOVEL_X, padding=1, groups=16)
 		sovel_y = conv2d(grid, SOVEL_Y, padding=1, groups=16)
 		identity = conv2d(grid, IDENTITY, padding=1, groups=16)
 
 		# return concatenated output
 		return torch.cat((sovel_x, sovel_y, identity), dim=1)
+	
