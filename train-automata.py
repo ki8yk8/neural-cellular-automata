@@ -7,6 +7,7 @@ IMAGE_PATH = "./images/banana-no-bg.png"
 
 # importing the image and creating the grid
 grid = Grid()
-grid.copy_image(IMAGE_PATH, verbose=True)
+grid.copy_image(IMAGE_PATH)
+grid.grid2img("./outputs/frame.png")
 
-# Grid.grid2img("./outputs/frame.png")
+# grid.grid2img("./outputs/frame.png")
