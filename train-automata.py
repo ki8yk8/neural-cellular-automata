@@ -27,4 +27,4 @@ perception_vector = grid.get_perception_vector()
 
 model = CellularNeuralAutomata()
 updated_state = model(perception_vector)
-breakpoint()
+grid.update(updated_state)

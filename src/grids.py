@@ -34,6 +34,8 @@ class Grid:
 		# all the rgb cells to 1 to make white color
 		self.grid[:3, :, :] = 1
 
+		self.stochasticity = 0.5
+
 	def copy_image(self, path):
 		image_with_alpha = decode_image(path, mode="RGBA")/255
 		image = image_with_alpha[:-1]
@@ -80,7 +82,7 @@ class Grid:
 		returns the mask for alive cells only. a cell is alive the cell or atleast one of the neirghbour hood cell has alpha >= 0.1. The image is to be formed for only the alive cell other becomes dead instantly.
 		"""
 		pool = max_pool2d(self.grid[3, :, :].unsqueeze(0), kernel_size=3, stride=1, padding=1)
-		return pool >= alive_threshold
+		return pool > alive_threshold
 
 	def resize_image(self, image, max_size=64):
 		"""
@@ -105,3 +107,14 @@ class Grid:
 		# return concatenated output
 		return torch.cat((sovel_x, sovel_y, identity), dim=1)
 	
+	def update(self, new_state):
+		"""
+		updates the self.grid with new_state through stochastic update and alive cell masking
+		"""
+		stocastic_mask = torch.rand_like(new_state) < self.stochasticity
+		new_state = new_state * stocastic_mask
+		new_state = self.grid + new_state
+
+		# only alive cell gets to the next step
+		alive_mask = self.get_alive_mask()
+		self.grid = self.grid * alive_mask
