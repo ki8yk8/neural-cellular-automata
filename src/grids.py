@@ -2,10 +2,28 @@
 creates utility function to work with grids like converting a given image to grid, visualizing it, etc.
 """
 import torch
+from torch.nn.functional import conv2d
 from torchvision.io import decode_image
 from torchvision.transforms import Resize
 from torch.nn.functional import max_pool2d
 import matplotlib.pyplot as plt
+
+# constant represnting filters for the operators
+SOVEL_X = torch.tensor([[
+	[-1, 0, 1],
+	[-2, 0, 2],
+	[-1, 0, 1],
+]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
+SOVEL_Y = torch.tensor([[
+	[-1, -2, -1],
+	[0, 0, 0],
+	[1, 2, 1],
+]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
+IDENTITY = torch.tensor([[
+	[0, 0, 0],
+	[0, 1, 0],
+	[0, 0, 0],
+]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
 
 class Grid:
 	def __init__(self, height=128, width=128):
@@ -73,3 +91,17 @@ class Grid:
 		h, w = int(h*scale), int(w*scale)
 
 		return Resize((h, w))(image)
+
+	def get_perception_vector(self):
+		"""
+		returns perception vector formed from the grid by concatenating sovel x, y, and identity
+		"""
+		grid = self.grid.unsqueeze(dim=0)
+
+		print(grid.shape)
+		sovel_x = conv2d(grid, SOVEL_X, padding=1, groups=16)
+		sovel_y = conv2d(grid, SOVEL_Y, padding=1, groups=16)
+		identity = conv2d(grid, IDENTITY, padding=1, groups=16)
+
+		# return concatenated output
+		return torch.cat((sovel_x, sovel_y, identity), dim=1)
