@@ -9,5 +9,3 @@ IMAGE_PATH = "./images/banana-no-bg.png"
 grid = Grid()
 grid.copy_image(IMAGE_PATH)
 grid.grid2img("./outputs/frame.png")
-
-# grid.grid2img("./outputs/frame.png")

@@ -22,7 +22,7 @@ class Grid:
 
 		# all the pixels with opacity 0.0 is set to white
 		alpha_mask = (image_with_alpha[3:4] > 0.0).squeeze()
-		image[:, alpha_mask] = 1
+		image[:, ~alpha_mask] = 1
 
 		resized_image = self.resize_image(image)
 
