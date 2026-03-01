@@ -117,7 +117,7 @@ class Grid:
 		# return concatenated output
 		return torch.cat((sovel_x, sovel_y, identity), dim=1)
 	
-	def update(self, new_state):
+	def update(self, new_state, use_mask=True):
 		"""
 		updates the self.grid with new_state through stochastic update and alive cell masking
 		"""
@@ -126,5 +126,6 @@ class Grid:
 		self.grid = self.grid + new_state
 
 		# only alive cell gets to the next step
-		alive_mask = self.get_alive_mask()
-		self.grid = self.grid * alive_mask
+		if use_mask:
+			alive_mask = self.get_alive_mask()
+			self.grid = self.grid * alive_mask

@@ -15,6 +15,11 @@ import torch
 from src.grids import Grid
 from src.model import CellularNeuralAutomata
 
+# Setting the seed values
+SEED = 42
+torch.manual_seed(SEED)
+np.random.seed(SEED)
+
 IMAGE_PATH = "./images/banana-no-bg.png"
 EPOCHS = 100
 
@@ -42,7 +47,9 @@ for i in range(EPOCHS):
 	for n in range(n_timesteps):
 		perception_vector = training_grid.get_perception_vector()
 		delta = model(perception_vector)
-		training_grid.update(delta)
+
+		# use alive masking after 20 epoch so that model learns better during first initial steps
+		training_grid.update(delta, use_mask=i>20)
 
 		if n >= n_timesteps//2:
 			current_image = training_grid.grid[:3,:,:]
