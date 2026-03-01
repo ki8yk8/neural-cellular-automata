@@ -31,7 +31,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 model.train()
 for i in range(EPOCHS):
 	training_grid = Grid()
-	training_grid.copy_image(IMAGE_PATH)
+	training_grid.copy_seed()
 
 	optimizer.zero_grad()
 	# choose a random number of timesteps
@@ -54,3 +54,6 @@ for i in range(EPOCHS):
 	optimizer.step()
 
 	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
+
+	# saving the end result of epoch on outputs for visualization
+	training_grid.grid2img(f"./outputs/epochs/{i}.png")

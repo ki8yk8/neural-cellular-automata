@@ -30,6 +30,8 @@ class Grid:
 		"""
 		grid = (channel, rows, cols) where, channels = (r, g, b, alpha, ....) and alpha = [0, 1] where a cell is living if it's or it's neighbourhood's alpha > 0.1 else it's dead
 		"""
+		self.height = height
+		self.width = width
 		self.grid = torch.zeros((16, height, width))
 		# all the rgb cells to 1 to make white color
 		self.grid[:3, :, :] = 1
@@ -56,12 +58,19 @@ class Grid:
 		# copies the 3 channels of resized image
 		self.grid[:3, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
 
+	def clear(self):
+		self.grid = torch.zeros((16, self.height, self.width))
+		self.grid[:3, :, :] = 1
+
+	def copy_seed(self):
+		self.grid[:, 128//2, 128//2] = torch.tensor([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
 	def grid2img(self, path, consider_alive=False):
 		"""
 		use to convert the cellular automata grid into image.
 		"""
 		alive_cells_mask = self.get_alive_mask()
-		image = self.grid[:3, :, :]
+		image = self.grid[:3, :, :].detach()
 
 		if consider_alive:
 			image = image*alive_cells_mask
