@@ -14,6 +14,7 @@ import torch
 
 from src.grids import Grid
 from src.model import CellularNeuralAutomata
+from src.utils import create_video
 
 # Setting the seed values
 SEED = 51
@@ -21,7 +22,7 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 IMAGE_PATH = "./images/banana-no-bg.png"
-EPOCHS = 300
+EPOCHS = 500
 
 # importing the image and creating the grid: training grid is used for training while ground grid acts as the ground truth for computing the losses
 true_grid = Grid()
@@ -69,4 +70,7 @@ for i in range(EPOCHS):
 	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
 
 	# saving the end result of epoch on outputs for visualization
-	training_grid.grid2img(f"./outputs/epochs.png")
+	training_grid.grid2img(f"./outputs/epochs/{i}.png")
+
+
+create_video("./outputs/epochs/", output_path="./outputs/training.gif")
