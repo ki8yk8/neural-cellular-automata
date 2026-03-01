@@ -63,7 +63,8 @@ class Grid:
 		self.grid[:3, :, :] = 1
 
 	def copy_seed(self):
-		self.grid[:, 128//2, 128//2] = torch.tensor([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+		self.grid[:, self.height//2, self.width//2] = 0.0
+		self.grid[3:, self.height//2, self.width//2] = 1.0
 
 	def grid2img(self, path, consider_alive=False):
 		"""
@@ -121,10 +122,8 @@ class Grid:
 		updates the self.grid with new_state through stochastic update and alive cell masking
 		"""
 		stocastic_mask = torch.rand_like(new_state) < self.stochasticity
-		new_state = new_state * stocastic_mask
+		new_state = new_state.squeeze(0) * stocastic_mask.squeeze(0)
 		self.grid = self.grid + new_state
-		self.grid = self.grid.squeeze()
-
 
 		# only alive cell gets to the next step
 		alive_mask = self.get_alive_mask()

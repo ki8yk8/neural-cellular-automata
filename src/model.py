@@ -12,7 +12,6 @@ class CellularNeuralAutomata(Module):
 		output = self.conv1(percpetion_vector)
 		output = self.relu(output)
 		output = self.conv2(output)
-		output = self.relu(output)
 
 		return output
 		

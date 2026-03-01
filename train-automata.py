@@ -26,7 +26,8 @@ true_grid.copy_image(IMAGE_PATH)
 # initializing model, optimizer, and criterion for the training
 model = CellularNeuralAutomata()
 criterion = torch.nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=2e-3)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
 
 model.train()
 for i in range(EPOCHS):
@@ -43,17 +44,21 @@ for i in range(EPOCHS):
 		delta = model(perception_vector)
 		training_grid.update(delta)
 
-		current_image = training_grid.grid[:3,:,:]
-		true_image = true_grid.grid[:3,:,:]
-		
-		loss = criterion(current_image, true_image)
-		total_loss += loss
+		if n >= n_timesteps//2:
+			current_image = training_grid.grid[:3,:,:]
+			true_image = true_grid.grid[:3,:,:]
+			
+			loss = criterion(current_image, true_image)
+			total_loss += loss
 
 	average_loss = total_loss/n_timesteps
 	average_loss.backward()
+
+	torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 	optimizer.step()
+	scheduler.step()
 
 	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
 
 	# saving the end result of epoch on outputs for visualization
-	training_grid.grid2img(f"./outputs/epochs/{i}.png")
+	training_grid.grid2img(f"./outputs/epochs.png")
