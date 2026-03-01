@@ -113,7 +113,9 @@ class Grid:
 		"""
 		stocastic_mask = torch.rand_like(new_state) < self.stochasticity
 		new_state = new_state * stocastic_mask
-		new_state = self.grid + new_state
+		self.grid = self.grid + new_state
+		self.grid = self.grid.squeeze()
+
 
 		# only alive cell gets to the next step
 		alive_mask = self.get_alive_mask()

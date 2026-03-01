@@ -19,10 +19,8 @@ IMAGE_PATH = "./images/banana-no-bg.png"
 EPOCHS = 100
 
 # importing the image and creating the grid: training grid is used for training while ground grid acts as the ground truth for computing the losses
-training_grid, true_grid = Grid(), Grid()
-
+true_grid = Grid()
 # copies the image to grid
-training_grid.copy_image(IMAGE_PATH)
 true_grid.copy_image(IMAGE_PATH)
 
 # initializing model, optimizer, and criterion for the training
@@ -32,11 +30,14 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 model.train()
 for i in range(EPOCHS):
+	training_grid = Grid()
+	training_grid.copy_image(IMAGE_PATH)
+
 	optimizer.zero_grad()
 	# choose a random number of timesteps
 	n_timesteps = np.random.randint(low=64, high=96)
 
-	total_loss = 0.0 
+	total_loss = 0.0
 	for n in range(n_timesteps):
 		perception_vector = training_grid.get_perception_vector()
 		delta = model(perception_vector)
