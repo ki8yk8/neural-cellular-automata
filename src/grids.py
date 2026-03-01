@@ -94,7 +94,7 @@ class Grid:
 		pool = max_pool2d(self.grid[3, :, :].unsqueeze(0), kernel_size=3, stride=1, padding=1)
 		return pool > alive_threshold
 
-	def resize_image(self, image, max_size=64):
+	def resize_image(self, image, max_size=128):
 		"""
 		returns the resized image for a given input image by shrinking the largest slide to max_size
 		"""
