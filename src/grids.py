@@ -8,7 +8,7 @@ from torch.nn.functional import max_pool2d
 
 from .utils import resize_image
 
-def create_image_grid(path, channel=16, height=128, width=128):
+def create_image_grid(path, n=1, channel=16, height=128, width=128):
 	# grid shape (C, H, W)
 	grid = torch.zeros((channel, height, width))
 
@@ -26,14 +26,14 @@ def create_image_grid(path, channel=16, height=128, width=128):
 
 	# copies the rgba channels from resized image
 	grid[:4, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
-	return grid
+	return grid.repeat(n, *grid.shape)
 
-def create_seed(self, n=1, channel=16, height=128, width=128):
+def create_seed(n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((n, channel, height, width))
 
 	# except rgb values all the channels is set to 1.0 for the center of grid
-	grid[:, :, self.height//2, self.width//2] = 0.0
-	grid[:, 3:, self.height//2, self.width//2] = 1.0
+	grid[:, :, height//2, width//2] = 0.0
+	grid[:, 3:, height//2, width//2] = 1.0
 
 	return grid
 
