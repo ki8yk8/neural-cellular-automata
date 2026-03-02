@@ -54,8 +54,8 @@ for i in range(EPOCHS):
 		training_grid.update(delta, use_mask=i>20, stochastic=True)
 
 		if n >= n_timesteps//2:
-			current_image = training_grid.grid[:3,:,:]
-			true_image = true_grid.grid[:3,:,:]
+			current_image = training_grid.grid[:4,:,:]
+			true_image = true_grid.grid[:4,:,:]
 			
 			loss = criterion(current_image, true_image)
 			total_loss += loss

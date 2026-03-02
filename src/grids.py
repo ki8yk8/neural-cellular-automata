@@ -14,8 +14,7 @@ SOVEL_X = torch.tensor([[
 	[-2, 0, 2],
 	[-1, 0, 1],
 ]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
-SOVEL_Y = SOVEL_X.transpose(0, 1)
-print(SOVEL_Y)
+SOVEL_Y = SOVEL_X.transpose(2, 3)
 
 class Grid:
 	def __init__(self, height=128, width=128):
@@ -25,16 +24,13 @@ class Grid:
 		self.height = height
 		self.width = width
 		self.grid = torch.zeros((16, height, width))
-		self.grid[3:, :, :] = 1.0
 
 		self.stochasticity = 0.5
 
 	def copy_image(self, path):
-		image_with_alpha = (decode_image(path, mode="RGBA")/255).clip(0.0, 1.0)
-		breakpoint()
-		image_rgb, image_alpha = (image_with_alpha[:3]/255).clip(0.0, 1.0), image_with_alpha[3]
-		image = torch.cat()
-		resized_image = self.resize_image(image)
+		image_with_alpha = (decode_image(path, mode="RGBA")/255.0).clip(0.0, 1.0)
+		image_with_alpha[:3] = image_with_alpha[:3]*image_with_alpha[3]
+		resized_image = self.resize_image(image_with_alpha)
 
 		# centering the image into the grid
 		_, grid_h, grid_w = self.grid.shape
@@ -44,11 +40,11 @@ class Grid:
 		y_offset = (grid_h-img_h)//2
 
 		# copies the 3 channels of resized image
-		self.grid[:3, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
+		self.grid[:4, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
 
 	def clear(self):
 		self.grid = torch.zeros((16, self.height, self.width))
-		self.grid[:3, :, :] = 1
+		self.grid[:4, :, :] = 1
 
 	def copy_seed(self):
 		self.grid[:, self.height//2, self.width//2] = 0.0
