@@ -14,16 +14,8 @@ SOVEL_X = torch.tensor([[
 	[-2, 0, 2],
 	[-1, 0, 1],
 ]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
-SOVEL_Y = torch.tensor([[
-	[-1, -2, -1],
-	[0, 0, 0],
-	[1, 2, 1],
-]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
-IDENTITY = torch.tensor([[
-	[0, 0, 0],
-	[0, 1, 0],
-	[0, 0, 0],
-]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
+SOVEL_Y = SOVEL_X.transpose(0, 1)
+print(SOVEL_Y)
 
 class Grid:
 	def __init__(self, height=128, width=128):
@@ -33,19 +25,15 @@ class Grid:
 		self.height = height
 		self.width = width
 		self.grid = torch.zeros((16, height, width))
-		# all the rgb cells to 1 to make white color
-		self.grid[:3, :, :] = 1
+		self.grid[3:, :, :] = 1.0
 
 		self.stochasticity = 0.5
 
 	def copy_image(self, path):
-		image_with_alpha = decode_image(path, mode="RGBA")/255
-		image = image_with_alpha[:-1]
-
-		# all the pixels with opacity 0.0 is set to white
-		alpha_mask = (image_with_alpha[3:4] > 0.0).squeeze()
-		image[:, ~alpha_mask] = 1
-
+		image_with_alpha = (decode_image(path, mode="RGBA")/255).clip(0.0, 1.0)
+		breakpoint()
+		image_rgb, image_alpha = (image_with_alpha[:3]/255).clip(0.0, 1.0), image_with_alpha[3]
+		image = torch.cat()
 		resized_image = self.resize_image(image)
 
 		# centering the image into the grid
@@ -66,14 +54,14 @@ class Grid:
 		self.grid[:, self.height//2, self.width//2] = 0.0
 		self.grid[3:, self.height//2, self.width//2] = 1.0
 
-	def grid2img(self, path, consider_alive=False):
+	def grid2img(self, path, consider_dead=False):
 		"""
 		use to convert the cellular automata grid into image.
 		"""
 		alive_cells_mask = self.get_alive_mask()
 		image = self.grid[:3, :, :].detach()
 
-		if consider_alive:
+		if not consider_dead:
 			image = image*alive_cells_mask
 		
 		# transposing image back to h, w, c
@@ -112,10 +100,9 @@ class Grid:
 
 		sovel_x = conv2d(grid, SOVEL_X, padding=1, groups=16)
 		sovel_y = conv2d(grid, SOVEL_Y, padding=1, groups=16)
-		identity = conv2d(grid, IDENTITY, padding=1, groups=16)
 
 		# return concatenated output
-		return torch.cat((sovel_x, sovel_y, identity), dim=1)
+		return torch.cat((grid, sovel_x, sovel_y), dim=1)
 	
 	def update(self, new_state, use_mask=True, stochastic=True):
 		"""

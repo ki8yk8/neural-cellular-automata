@@ -22,13 +22,13 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 IMAGE_PATH = "./images/banana-no-bg.png"
-EPOCHS = 500
+EPOCHS = 50
 
 # importing the image and creating the grid: training grid is used for training while ground grid acts as the ground truth for computing the losses
 true_grid = Grid()
 # copies the image to grid
 true_grid.copy_image(IMAGE_PATH)
-true_grid.grid2img("./outputs/frame.png")
+true_grid.grid2img("./outputs/frame.png", consider_dead=True)
 
 # initializing model, optimizer, and criterion for the training
 model = CellularNeuralAutomata()
