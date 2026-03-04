@@ -24,7 +24,7 @@ np.random.seed(SEED)
 
 # setting up constants
 IMAGE_PATH = "./images/banana-no-bg.png"
-EPOCHS = 5000
+EPOCHS = 8000
 LR = 2e-3
 BATCH_SIZE = 8
 
