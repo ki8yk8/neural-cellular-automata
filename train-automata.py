@@ -26,7 +26,7 @@ np.random.seed(SEED)
 IMAGE_PATH = "./images/banana-no-bg.png"
 EPOCHS = 5000
 LR = 2e-3
-BATCH_SIZE = 1
+BATCH_SIZE = 8
 
 def lr_lambda(step):
 	return 0.1 if step>2000 else 1.0
