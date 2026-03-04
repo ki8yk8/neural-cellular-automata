@@ -26,7 +26,7 @@ def create_image_grid(path, n=1, channel=16, height=128, width=128):
 
 	# copies the rgba channels from resized image
 	grid[:4, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
-	return grid.repeat(n, *grid.shape)
+	return grid.repeat(n, 1, 1, 1)
 
 def create_seed(n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((n, channel, height, width))
