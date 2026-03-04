@@ -1,16 +1,22 @@
 import torch
 from ..model import CellularNeuralAutomata
 
-def get_neighbouring_cell_indexes(index, grid_h, grid_w):
-	i, j = index
-	indexes = [
-		(i-1, j-1), (i, j-1), (i+1, j-1),
-		(i-1, j), (i+1, j),
-		(i-1, j+1), (i, j+1), (i+1, j+1),
-	]
+def get_submatrix(grid, index):
+	"""
+	gets the submatrix from the grid around the index
+	"""
+	submatrix = torch.zeros((3, 3), dtype=torch.float32)
 
-	filtered_indexes = filter(lambda s: s[0] >=0 and s[1] >= 0 and s[0]<grid_h and s[1]<grid_w, indexes)
-	return filtered_indexes
+	i, j = index
+	max_i, max_j = grid.shape
+	for di in range(-1, 2):
+		for dj in range(-1, 2):
+			ni, nj = i+di, j+dj
+
+			if 0<=ni<max_i and 0<=nj<max_j:
+				submatrix[di+1, dj+1] = grid[ni, nj]
+
+	return submatrix
 
 def manual_depthwise_convolution(grid, filter):
 	"""
@@ -20,10 +26,11 @@ def manual_depthwise_convolution(grid, filter):
 	for c, channel in enumerate(grid):
 		for h in range(len(channel)):
 			for w in range(grid.shape[-1]):
-				cell_index = [(h, w), *get_neighbouring_cell_indexes((h, w), len(channel), grid.shape[-1])]
+				neighbours = get_submatrix(channel, (h, w))
+				result[c, h, w] = (neighbours * filter).sum()
+
+	return result
 				
-
-
 def test_perception_vector():
 	"""
 	test case for the working of perception vectors. 
