@@ -31,7 +31,6 @@ LR = 2e-3
 model = CellularNeuralAutomata()
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=EPOCHS)
 
 model.train()
 for i in range(EPOCHS):
@@ -52,10 +51,11 @@ for i in range(EPOCHS):
 
 	average_loss = total_loss/n_timesteps
 	average_loss.backward()
-	torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
+	for p in model.parameters():
+		p.grad /= (p.grad.norm() + 1e-8)
 
 	optimizer.step()
-	scheduler.step()
 
 	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
 

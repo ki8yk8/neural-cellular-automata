@@ -21,8 +21,8 @@ class CellularNeuralAutomata(Module):
 		self.relu = ReLU()
 
 		# zero initializing the convolution layers
-		torch.nn.init.zeros_(self.conv1.weight)
-		torch.nn.init.zeros_(self.conv1.bias)
+		# torch.nn.init.zeros_(self.conv1.weight)
+		# torch.nn.init.zeros_(self.conv1.bias)
 		torch.nn.init.zeros_(self.conv2.weight)
 		torch.nn.init.zeros_(self.conv2.bias)
 
