@@ -13,6 +13,8 @@ def create_image_grid(path, n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((channel, height, width))
 
 	image_with_alpha = (decode_image(path, mode="RGBA")/255.0).clip(0.0, 1.0)
+	image_with_alpha[:3] *= image_with_alpha[3:4]
+
 	resized_image = resize_image(image_with_alpha)
 
 	# centering the image into the grid
@@ -45,13 +47,13 @@ def get_living_mask(grid, threshold=0.1):
 	pool = max_pool2d(grid[:, 3:4, :, :], kernel_size=3, stride=1, padding=1)
 	return (pool > threshold).float()
 
-def update(grid, delta, stochastic=0.5):
+def update(grid, delta, fire_rate=0.5):
 	"""
 	updates the self.grid with new_state through stochastic update and alive cell masking
 	"""
 	prelife_mask = get_living_mask(grid)
 
-	stocastic_mask = torch.rand_like(delta) < stochastic
+	stocastic_mask = (torch.rand(delta[:, :1].shape) < fire_rate).float()
 	delta = delta * stocastic_mask
 	grid = grid+delta
 	

@@ -24,40 +24,42 @@ np.random.seed(SEED)
 
 # setting up constants
 IMAGE_PATH = "./images/banana-no-bg.png"
-EPOCHS = 50
+EPOCHS = 5000
 LR = 2e-3
+BATCH_SIZE = 8
+
+def lr_lambda(step):
+	return 0.1 if step>2000 else 1.0
 
 # initializing model, optimizer, and criterion for the training
 model = CellularNeuralAutomata()
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
 model.train()
 for i in range(EPOCHS):
-	training_grid = create_seed()
-	true_image = create_image_grid(IMAGE_PATH)
+	training_grid = create_seed(BATCH_SIZE)
+	true_image = create_image_grid(IMAGE_PATH, BATCH_SIZE)
 
 	optimizer.zero_grad()
 	# choose a random number of timesteps
 	n_timesteps = np.random.randint(low=64, high=96)
 
-	total_loss = 0.0
 	for n in range(n_timesteps):
 		delta = model(training_grid)
 
 		training_grid = update(training_grid, delta)
-		loss = criterion(true_image[:,:4], training_grid[:,:4])
-		total_loss += loss
 
-	average_loss = total_loss/n_timesteps
-	average_loss.backward()
+	loss = criterion(true_image[:,:4], training_grid[:,:4])
+	loss.backward()
 
 	for p in model.parameters():
 		p.grad /= (p.grad.norm() + 1e-8)
 
 	optimizer.step()
 
-	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
+	print(f"Epoch {i+1}, Loss: {loss.item()}")
 
 	# saving the end result of epoch on outputs for visualization
 	grid2img(training_grid, f"./outputs/epochs/{i}.png")
