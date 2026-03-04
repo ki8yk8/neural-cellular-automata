@@ -36,8 +36,7 @@ def grid2img(grid, path):
 	# composite background
 	rgb = image[:, :, :3]
 	alpha = image[:, :, 3:4]
-	white = torch.ones_like(rgb)
-	composited = (rgb*alpha+white*(1-alpha)).numpy()
+	composited = rgb + (1 - alpha)
 
 	if path:
 		plt.tight_layout()
@@ -47,7 +46,7 @@ def grid2img(grid, path):
 
 	return composited
 
-def resize_image(image, max_size=128):
+def resize_image(image, max_size=40):
 	"""
 	returns the resized image for a given input image by shrinking the largest slide to max_size
 	"""

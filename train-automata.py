@@ -26,7 +26,7 @@ np.random.seed(SEED)
 IMAGE_PATH = "./images/banana-no-bg.png"
 EPOCHS = 5000
 LR = 2e-3
-BATCH_SIZE = 8
+BATCH_SIZE = 1
 
 def lr_lambda(step):
 	return 0.1 if step>2000 else 1.0
@@ -37,10 +37,11 @@ criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
+true_image = create_image_grid(IMAGE_PATH, BATCH_SIZE)
+
 model.train()
 for i in range(EPOCHS):
 	training_grid = create_seed(BATCH_SIZE)
-	true_image = create_image_grid(IMAGE_PATH, BATCH_SIZE)
 
 	optimizer.zero_grad()
 	# choose a random number of timesteps
@@ -58,10 +59,11 @@ for i in range(EPOCHS):
 		p.grad /= (p.grad.norm() + 1e-8)
 
 	optimizer.step()
+	scheduler.step()
 
 	print(f"Epoch {i+1}, Loss: {loss.item()}")
 
 	# saving the end result of epoch on outputs for visualization
-	grid2img(training_grid, f"./outputs/epochs/{i}.png")
+	grid2img(training_grid.detach(), f"./outputs/epochs/{i}.png")
 
 create_video("./outputs/epochs/", output_path="./outputs/training.gif")

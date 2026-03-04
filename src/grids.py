@@ -8,7 +8,7 @@ from torch.nn.functional import max_pool2d
 
 from .utils import resize_image
 
-def create_image_grid(path, n=1, channel=16, height=128, width=128):
+def create_image_grid(path, n=1, channel=16, height=72, width=72):
 	# grid shape (C, H, W)
 	grid = torch.zeros((channel, height, width))
 
@@ -28,7 +28,7 @@ def create_image_grid(path, n=1, channel=16, height=128, width=128):
 	grid[:4, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
 	return grid.unsqueeze(dim=0).repeat(n, 1, 1, 1)
 
-def create_seed(n=1, channel=16, height=128, width=128):
+def create_seed(n=1, channel=16, height=72, width=72):
 	grid = torch.zeros((n, channel, height, width))
 
 	# except rgb values all the channels is set to 1.0 for the center of grid
@@ -53,7 +53,7 @@ def update(grid, delta, fire_rate=0.5):
 	"""
 	prelife_mask = get_living_mask(grid)
 
-	stocastic_mask = (torch.rand(delta[:, :1].shape) < fire_rate).float()
+	stocastic_mask = (torch.rand(delta[:, :1].shape) <= fire_rate).float()
 	delta = delta * stocastic_mask
 	grid = grid+delta
 	
