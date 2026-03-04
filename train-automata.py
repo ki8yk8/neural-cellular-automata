@@ -63,6 +63,7 @@ for i in range(EPOCHS):
 	scheduler.step()
 
 	print(f"Epoch {i+1}, Loss: {loss.item()}")
+	torch.save(model.state_dict(), f"./outputs/logs/{i}.pt")
 
 	# saving the end result of epoch on outputs for visualization
 	grid2img(training_grid.detach(), f"./outputs/epochs/{i}.png")
