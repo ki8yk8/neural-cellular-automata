@@ -24,7 +24,7 @@ def create_image_grid(path, n=1, channel=16, height=128, width=128):
 
 	# copies the rgba channels from resized image
 	grid[:4, y_offset:y_offset+img_h, x_offset:x_offset+img_w] = resized_image
-	return grid.repeat(n, 1, 1, 1)
+	return grid.unsqueeze(dim=0).repeat(n, 1, 1, 1)
 
 def create_seed(n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((n, channel, height, width))
@@ -42,7 +42,7 @@ def get_living_mask(grid, threshold=0.1):
 		# batch dimension not present then
 		grid = grid.unsqueeze(dim=0)
 	
-	pool = max_pool2d(grid[:, 3, :, :], kernel_size=3, stride=1, padding=1)
+	pool = max_pool2d(grid[:, 3:4, :, :], kernel_size=3, stride=1, padding=1)
 	return pool > threshold
 
 def update(grid, delta, stochastic=0.5):
@@ -50,7 +50,7 @@ def update(grid, delta, stochastic=0.5):
 	updates the self.grid with new_state through stochastic update and alive cell masking
 	"""
 	stocastic_mask = torch.rand_like(delta) < stochastic
-	delta = delta.squeeze(0) * stocastic_mask.squeeze(0)
+	delta = delta * stocastic_mask
 	
 	grid = grid+delta
 	living_mask = get_living_mask(grid)
