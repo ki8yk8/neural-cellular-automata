@@ -20,8 +20,9 @@ def get_submatrix(grid, index):
 
 def manual_depthwise_convolution(grid, filter):
 	"""
-	assumes filter is always square and filter is 3 by 3
+	assumes filter is always square and filter is 3 by 3 and grid is just one sample
 	"""
+	grid = grid.squeeze(dim=0)
 	result = torch.empty(grid.shape, dtype=torch.float32)
 	for c, channel in enumerate(grid):
 		for h in range(len(channel)):
@@ -29,7 +30,7 @@ def manual_depthwise_convolution(grid, filter):
 				neighbours = get_submatrix(channel, (h, w))
 				result[c, h, w] = (neighbours * filter).sum()
 
-	return result
+	return result.unsqueeze(dim=0)
 				
 def test_perception_vector():
 	"""
