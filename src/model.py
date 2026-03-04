@@ -7,7 +7,7 @@ SOVEL_X = torch.tensor([[
 	[-1, 0, 1],
 	[-2, 0, 2],
 	[-1, 0, 1],
-]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)
+]], dtype=torch.float32).unsqueeze(dim=0).repeat(16, 1, 1, 1)/8.0
 
 SOVEL_Y = SOVEL_X.transpose(2, 3)
 class CellularNeuralAutomata(Module):
@@ -19,6 +19,12 @@ class CellularNeuralAutomata(Module):
 		self.conv1 = Conv2d(in_channels=channels*3, out_channels=hidden_dim, bias=True, kernel_size=1)
 		self.conv2 = Conv2d(in_channels=hidden_dim, out_channels=16, bias=True, kernel_size=1)
 		self.relu = ReLU()
+
+		# zero initializing the convolution layers
+		torch.nn.init.zeros_(self.conv1.weight)
+		torch.nn.init.zeros_(self.conv1.bias)
+		torch.nn.init.zeros_(self.conv2.weight)
+		torch.nn.init.zeros_(self.conv2.bias)
 
 		# not a model parameter but the part of it
 		self.register_buffer("sovel_x", SOVEL_X)
