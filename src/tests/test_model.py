@@ -1,8 +1,28 @@
 import torch
 from ..model import CellularNeuralAutomata
 
+def get_neighbouring_cell_indexes(index, grid_h, grid_w):
+	i, j = index
+	indexes = [
+		(i-1, j-1), (i, j-1), (i+1, j-1),
+		(i-1, j), (i+1, j),
+		(i-1, j+1), (i, j+1), (i+1, j+1),
+	]
+
+	filtered_indexes = filter(lambda s: s[0] >=0 and s[1] >= 0 and s[0]<grid_h and s[1]<grid_w, indexes)
+	return filtered_indexes
+
 def manual_depthwise_convolution(grid, filter):
-	return False
+	"""
+	assumes filter is always square and filter is 3 by 3
+	"""
+	result = torch.empty(grid.shape, dtype=torch.float32)
+	for c, channel in enumerate(grid):
+		for h in range(len(channel)):
+			for w in range(grid.shape[-1]):
+				cell_index = [(h, w), *get_neighbouring_cell_indexes((h, w), len(channel), grid.shape[-1])]
+				
+
 
 def test_perception_vector():
 	"""
