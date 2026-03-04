@@ -1,3 +1,4 @@
+import torch
 import warnings
 import imageio
 import os
@@ -29,18 +30,22 @@ def grid2img(grid, path):
 		grid = grid[0]
 		warnings.warn(f"Encountered grid with batch dimension, {grid.shape}, considers only the first sample", UserWarning)
 	
-	image = grid.detach()[:4, :, :]
-
 	# transposing image back to h, w, c
-	image = image.permute((1, 2, 0)).clip(0.0, 1.0)
+	image = grid.detach()[:4, :, :].permute((1, 2, 0)).clip(0.0, 1.0)
+
+	# composite background
+	rgb = image[:, :, :3]
+	alpha = image[:, :, 3:4]
+	white = torch.ones_like(rgb)
+	composited = (rgb*alpha+white*(1-alpha)).numpy()
 
 	if path:
 		plt.tight_layout()
 		plt.axis("off")
-		plt.imsave(path, image)
+		plt.imsave(path, composited)
 		plt.close()
 
-	return image
+	return composited
 
 def resize_image(image, max_size=128):
 	"""

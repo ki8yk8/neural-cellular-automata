@@ -43,17 +43,20 @@ def get_living_mask(grid, threshold=0.1):
 		grid = grid.unsqueeze(dim=0)
 	
 	pool = max_pool2d(grid[:, 3:4, :, :], kernel_size=3, stride=1, padding=1)
-	return pool > threshold
+	return (pool > threshold).float()
 
 def update(grid, delta, stochastic=0.5):
 	"""
 	updates the self.grid with new_state through stochastic update and alive cell masking
 	"""
+	prelife_mask = get_living_mask(grid)
+
 	stocastic_mask = torch.rand_like(delta) < stochastic
 	delta = delta * stocastic_mask
-	
 	grid = grid+delta
-	living_mask = get_living_mask(grid)
-	grid = grid*living_mask
+	
+	postlife_mask = get_living_mask(grid)
+	life_mask = prelife_mask * postlife_mask
+	grid = grid*life_mask
 
 	return grid

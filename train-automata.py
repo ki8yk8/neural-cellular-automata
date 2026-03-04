@@ -46,7 +46,6 @@ for i in range(EPOCHS):
 	for n in range(n_timesteps):
 		delta = model(training_grid)
 
-		# use alive masking after 20 epoch so that model learns better during first initial steps
 		training_grid = update(training_grid, delta)
 		loss = criterion(true_image[:,:4], training_grid[:,:4])
 		total_loss += loss
