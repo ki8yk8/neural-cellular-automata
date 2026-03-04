@@ -11,6 +11,7 @@ Model Training Steps
 """
 import numpy as np
 import torch
+import json
 
 from src.model import CellularNeuralAutomata
 from src.utils import create_video
@@ -38,6 +39,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
 true_image = create_image_grid(IMAGE_PATH, BATCH_SIZE)
+metadata = dict()
 
 model.train()
 for i in range(EPOCHS):
@@ -56,8 +58,10 @@ for i in range(EPOCHS):
 	loss.backward()
 	
 	torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-	# for p in model.parameters():
-	# 	p.grad /= (p.grad.norm() + 1e-8)
+	metadata[i] = {
+		"timesteps": int(n_timesteps),
+		"loss": loss.item(),
+	}
 
 	optimizer.step()
 	scheduler.step()
@@ -69,3 +73,6 @@ for i in range(EPOCHS):
 	grid2img(training_grid.detach(), f"./outputs/epochs/{i}.png")
 
 create_video("./outputs/epochs/", output_path="./outputs/training.gif")
+
+with open(f"./outputs/training.json", "w") as fp:
+	json.dump(metadata, fp, indent=2)
