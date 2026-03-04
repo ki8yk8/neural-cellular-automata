@@ -31,12 +31,13 @@ def grid2img(grid, path):
 		warnings.warn(f"Encountered grid with batch dimension, {grid.shape}, considers only the first sample", UserWarning)
 	
 	# transposing image back to h, w, c
-	image = grid.detach()[:4, :, :].permute((1, 2, 0)).clip(0.0, 1.0)
+	image = grid.detach()[:4, :, :].permute((1, 2, 0))
 
 	# composite background
 	rgb = image[:, :, :3]
 	alpha = image[:, :, 3:4]
 	composited = rgb + (1 - alpha)
+	composited = composited.clip(0.0, 1.0)
 
 	if path:
 		plt.tight_layout()

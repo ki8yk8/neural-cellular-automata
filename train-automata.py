@@ -52,9 +52,9 @@ for i in range(EPOCHS):
 
 		training_grid = update(training_grid, delta)
 
-	loss = criterion(true_image[:,:4], training_grid[:,:4])
+	loss = criterion(training_grid[:,:4], true_image[:,:4])
 	loss.backward()
-
+	
 	for p in model.parameters():
 		p.grad /= (p.grad.norm() + 1e-8)
 
