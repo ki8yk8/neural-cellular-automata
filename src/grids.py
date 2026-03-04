@@ -13,8 +13,6 @@ def create_image_grid(path, n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((channel, height, width))
 
 	image_with_alpha = (decode_image(path, mode="RGBA")/255.0).clip(0.0, 1.0)
-	# premultiplication of rgb with alpha value
-	image_with_alpha[:3] = image_with_alpha[:3]*image_with_alpha[3]
 	resized_image = resize_image(image_with_alpha)
 
 	# centering the image into the grid
@@ -32,7 +30,6 @@ def create_seed(n=1, channel=16, height=128, width=128):
 	grid = torch.zeros((n, channel, height, width))
 
 	# except rgb values all the channels is set to 1.0 for the center of grid
-	grid[:, :, height//2, width//2] = 0.0
 	grid[:, 3:, height//2, width//2] = 1.0
 
 	return grid

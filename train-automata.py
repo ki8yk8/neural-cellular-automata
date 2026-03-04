@@ -37,8 +37,6 @@ model.train()
 for i in range(EPOCHS):
 	training_grid = create_seed()
 	true_image = create_image_grid(IMAGE_PATH)
-	grid2img(true_image, "./outputs/true.png")
-	raise
 
 	optimizer.zero_grad()
 	# choose a random number of timesteps
@@ -46,7 +44,7 @@ for i in range(EPOCHS):
 
 	total_loss = 0.0
 	for n in range(n_timesteps):
-		delta = model(training_grid)
+		delta = model(true_image)
 
 		# use alive masking after 20 epoch so that model learns better during first initial steps
 		training_grid = update(training_grid, delta)
@@ -62,6 +60,6 @@ for i in range(EPOCHS):
 	print(f"Epoch {i+1}, Loss: {average_loss.item()}")
 
 	# saving the end result of epoch on outputs for visualization
-	training_grid.grid2img(f"./outputs/epochs/{i}.png")
+	grid2img(training_grid, f"./outputs/epochs/{i}.png")
 
 create_video("./outputs/epochs/", output_path="./outputs/training.gif")

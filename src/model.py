@@ -2,6 +2,8 @@ import torch
 from torch.nn import Module, Conv2d, ReLU
 from torch.nn.functional import conv2d
 
+from .utils import grid2img
+
 # constant represnting filters for the operators
 SOVEL_X = torch.tensor([[
 	[-1, 0, 1],
