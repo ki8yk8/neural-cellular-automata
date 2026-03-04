@@ -12,7 +12,7 @@ with open("./outputs/training.json", "r") as fp:
 	metadata = json.load(fp)
 
 # edit the constant to choose the best checkpoint
-CHECKPOINT = -1
+CHECKPOINT = 7999
 if CHECKPOINT == -1:
 	lowest_loss, lowest_loss_index = 100.0, -1
 	for i, m in metadata.items():

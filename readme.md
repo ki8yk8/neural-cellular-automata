@@ -3,7 +3,7 @@ Have you head of cellular automata? They can be considered as simulation with ve
 
 We extend this concept to store the image of banana. Here, the simple rules are learned by the neural network such that at each step each cell independently change themself slowly converging to create the image of banana. Note that the banana generated is just cell interacting with each other and evolving themself to create banana.
 
-![Image of banana to be stored](./images/banana-no-bg.png)
+![Image of banana to be stored](./outputs/ground_truth.png)
 
 For more details [refer to this amazing interactive research paper](https://distill.pub/2020/growing-ca/).
 
