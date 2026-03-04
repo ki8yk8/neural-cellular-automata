@@ -1,3 +1,4 @@
+import warnings
 import imageio
 import os
 from PIL import Image
@@ -24,7 +25,11 @@ def grid2img(grid, path):
 	"""
 	use to convert the cellular automata grid into image.
 	"""
-	image = grid[:4, :, :].detach()
+	if len(grid.shape) > 3:
+		grid = grid[0]
+		warnings.warn(f"Encountered grid with batch dimension, {grid.shape}, considers only the first sample", UserWarning)
+	
+	image = grid.detach()[:4, :, :]
 
 	# transposing image back to h, w, c
 	image = image.permute((1, 2, 0)).clip(0.0, 1.0)

@@ -15,6 +15,7 @@ import torch
 from src.model import CellularNeuralAutomata
 from src.utils import create_video
 from src.grids import create_image_grid, create_seed, update
+from src.utils import grid2img
 
 # Setting the seed values
 SEED = 51
@@ -36,6 +37,8 @@ model.train()
 for i in range(EPOCHS):
 	training_grid = create_seed()
 	true_image = create_image_grid(IMAGE_PATH)
+	grid2img(true_image, "./outputs/true.png")
+	raise
 
 	optimizer.zero_grad()
 	# choose a random number of timesteps
