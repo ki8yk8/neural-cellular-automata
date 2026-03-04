@@ -55,8 +55,9 @@ for i in range(EPOCHS):
 	loss = criterion(training_grid[:,:4], true_image[:,:4])
 	loss.backward()
 	
-	for p in model.parameters():
-		p.grad /= (p.grad.norm() + 1e-8)
+	torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+	# for p in model.parameters():
+	# 	p.grad /= (p.grad.norm() + 1e-8)
 
 	optimizer.step()
 	scheduler.step()
